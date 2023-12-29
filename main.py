@@ -1,4 +1,14 @@
-op_arr = ['+', '-', '*', '/', '^', '@', '&', '&', '%']
+import math
+
+op_level_1 = ['+', '-']
+op_level_2 = ['*', '/']
+op_level_3 = ['^']
+op_level_4 = ['%']
+op_level_5 = ['@', '$', '&']
+op_level_6 = ['~', '!']
+
+op_arr = op_level_1 + op_level_2 + op_level_3 + op_level_4 + op_level_5 + op_level_6
+
 number_chars_arr = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
 
 
@@ -11,19 +21,35 @@ class TreeNode:
 
 def calculate_tree(node):
     if node.left is None and node.right is None:
-        return int(node.value)  # Assuming the node is an operand (number)
+        return float(node.value)  # Assuming the node is an operand (number)
 
     left_val = calculate_tree(node.left)
     right_val = calculate_tree(node.right)
 
     if node.value == '+':
-        return left_val + right_val
+        return right_val + left_val
     elif node.value == '-':
-        return left_val - right_val
+        return right_val - left_val
     elif node.value == '*':
-        return left_val * right_val
+        return right_val * left_val
     elif node.value == '/':
-        return left_val / right_val
+        return right_val / left_val
+    elif node.value == '^':
+        return math.pow(right_val, left_val)
+    elif node.value == '@':
+        return (right_val + left_val) / 2
+    elif node.value == '$':
+        if right_val > left_val:
+            return right_val
+        else:
+            return left_val
+    elif node.value == '&':
+        if right_val < left_val:
+            return right_val
+        else:
+            return left_val
+    elif node.value == '%':
+        return right_val % left_val
 
 
 def print_tree(node, level=0, prefix="Root: "):
@@ -39,6 +65,7 @@ def print_tree(node, level=0, prefix="Root: "):
                 print_tree(node.right, level + 1, "R--- ")
             else:
                 print(" " * 4 * (level + 1) + "R--- None")
+
 
 def find_closing_parenthesis(expression, opening_index):
     stack = []
@@ -83,8 +110,7 @@ def create_tree(tree_node):
             op_found = True
         i += 1
 
-
-    if (len(parts) == 3):
+    if len(parts) == 3:
         tree_node.right = TreeNode(parts[0])
         tree_node.left = TreeNode(parts[1])
         tree_node.value = parts[2]
@@ -94,7 +120,7 @@ def create_tree(tree_node):
 
 
 def main():
-    string = "9*((45+544)+7*8)"
+    string = "90/10"
     tree_node = TreeNode(string)
     create_tree(tree_node)
     num = calculate_tree(tree_node)

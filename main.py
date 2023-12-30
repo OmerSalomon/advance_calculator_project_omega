@@ -7,7 +7,7 @@ op_level_4 = ['%']
 op_level_5 = ['@', '$', '&']
 op_level_6 = ['~', '!']
 
-op_arr = op_level_1 + op_level_2 + op_level_3 + op_level_4 + op_level_5 + op_level_6
+middle_op_arr = op_level_1 + op_level_2 + op_level_3 + op_level_4 + op_level_5
 
 number_chars_arr = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
 
@@ -66,6 +66,16 @@ def print_tree(node, level=0, prefix="Root: "):
             else:
                 print(" " * 4 * (level + 1) + "R--- None")
 
+def factorial(n):
+    if n < 0:
+        return "Factorial does not exist for negative numbers"
+    elif n == 0 or n == 1:
+        return 1
+    else:
+        result = 1
+        for i in range(2, n + 1):
+            result *= i
+        return result
 
 def find_closing_parenthesis(expression, opening_index):
     stack = []
@@ -102,13 +112,29 @@ def create_tree(tree_node):
         second_part = calculate_tree(second_part_tree)
         string = first_part + str(second_part) + third_part
 
-    op_found = False
-    while i < len(op_arr) and not op_found:
-        if op_arr[i] in string:
-            parts = string.split(op_arr[i], 1)
-            parts.append(op_arr[i])
-            op_found = True
+    middle_operators_found = False
+    while i < len(middle_op_arr) and not middle_operators_found:
+        if middle_op_arr[i] in string:
+            parts = string.split(middle_op_arr[i], 1)
+            parts.append(middle_op_arr[i])
+            middle_operators_found = True
         i += 1
+
+    if not middle_operators_found:
+        if '!' in string:
+            string = string.replace('!', '')
+            tree_node.value = factorial(int(string))
+        elif '~' in string:
+            string = string.replace('~', '')
+            tree_node.value = -int(string)
+        elif '~' in string and '!' in string:
+            string = string.replace('!', '')
+            string = string.replace('~', '')
+            tree_node.value = -factorial(int(string))
+
+
+
+
 
     if len(parts) == 3:
         tree_node.right = TreeNode(parts[0])
@@ -120,7 +146,7 @@ def create_tree(tree_node):
 
 
 def main():
-    string = "90/10"
+    string = "10+5!"
     tree_node = TreeNode(string)
     create_tree(tree_node)
     num = calculate_tree(tree_node)

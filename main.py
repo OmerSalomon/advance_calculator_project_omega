@@ -1,11 +1,13 @@
 import math
 
+import expression_validator
+
 op_level_1 = ['+', '-']
 op_level_2 = ['*', '/']
 op_level_3 = ['^']
 op_level_4 = ['%']
 op_level_5 = ['@', '$', '&']
-op_level_6 = ['~', '!']
+special_op_6 = ['~', '!']
 
 middle_op_arr = op_level_1 + op_level_2 + op_level_3 + op_level_4 + op_level_5
 
@@ -66,6 +68,7 @@ def print_tree(node, level=0, prefix="Root: "):
             else:
                 print(" " * 4 * (level + 1) + "R--- None")
 
+
 def factorial(n):
     if n < 0:
         return "Factorial does not exist for negative numbers"
@@ -76,6 +79,7 @@ def factorial(n):
         for i in range(2, n + 1):
             result *= i
         return result
+
 
 def find_closing_parenthesis(expression, opening_index):
     stack = []
@@ -137,7 +141,6 @@ def create_tree(tree_node):
             string = string.replace('~', '')
             tree_node.value = -convert_to_int(string)
 
-
     if len(parts) == 3:
         tree_node.right = TreeNode(parts[0])
         tree_node.left = TreeNode(parts[1])
@@ -148,11 +151,26 @@ def create_tree(tree_node):
 
 
 def main():
-    string = "3+~9"
-    tree_node = TreeNode(string)
-    create_tree(tree_node)
-    num = calculate_tree(tree_node)
-    print(num)
+    print("Enter math expression")
+    string = input()
+
+    while string != "close":
+        valid_char_list = middle_op_arr + special_op_6 + number_chars_arr
+        if expression_validator.validate_expression(string, valid_char_list):
+            tree_node = TreeNode(string)
+            try:
+                create_tree(tree_node)
+                res = calculate_tree(tree_node)
+                print(f"The calculation results are: {res}")
+            except ValueError as e:
+                print("there was a problem try again")
+        else:
+            print("expression is not valid")
+
+        print("Enter math expression")
+        string = input()
+
+
 
 
 if __name__ == "__main__":

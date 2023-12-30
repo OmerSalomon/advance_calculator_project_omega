@@ -1,130 +1,128 @@
-import math
-
-op_level_1 = ['+', '-']
-op_level_2 = ['*', '/']
-op_level_3 = ['^']
-op_level_4 = ['%']
-op_level_5 = ['@', '$', '&']
-op_level_6 = ['~', '!']
-
-op_arr = op_level_1 + op_level_2 + op_level_3 + op_level_4 + op_level_5 + op_level_6
-
-number_chars_arr = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+def prec(c):
+    if c == '^':
+        return 3
+    elif c == '/' or c == '*':
+        return 2
+    elif c == '+' or c == '-':
+        return 1
+    else:
+        return -1
 
 
-class TreeNode:
-    def __init__(self, value):
-        self.value = value
-        self.left = None
-        self.right = None
+def associativity(c):
+    if c == '^':
+        return 'R'
+    return 'L'  # Default to left-associative
 
 
-def calculate_tree(node):
-    if node.left is None and node.right is None:
-        return float(node.value)  # Assuming the node is an operand (number)
-
-    left_val = calculate_tree(node.left)
-    right_val = calculate_tree(node.right)
-
-    if node.value == '+':
-        return right_val + left_val
-    elif node.value == '-':
-        return right_val - left_val
-    elif node.value == '*':
-        return right_val * left_val
-    elif node.value == '/':
-        return right_val / left_val
-    elif node.value == '^':
-        return math.pow(right_val, left_val)
-    elif node.value == '@':
-        return (right_val + left_val) / 2
-    elif node.value == '$':
-        if right_val > left_val:
-            return right_val
-        else:
-            return left_val
-    elif node.value == '&':
-        if right_val < left_val:
-            return right_val
-        else:
-            return left_val
-    elif node.value == '%':
-        return right_val % left_val
-
-
-def print_tree(node, level=0, prefix="Root: "):
-    if node is not None:
-        print(" " * 4 * level + prefix + str(node.value))
-        if node.left is not None or node.right is not None:
-            if node.left:
-                print_tree(node.left, level + 1, "L--- ")
-            else:
-                print(" " * 4 * (level + 1) + "L--- None")
-
-            if node.right:
-                print_tree(node.right, level + 1, "R--- ")
-            else:
-                print(" " * 4 * (level + 1) + "R--- None")
-
-
-def find_closing_parenthesis(expression, opening_index):
+def infix_to_postfix(s):
+    result = []
     stack = []
-    for i, char in enumerate(expression):
-        if char == '(':
-            stack.append(i)
-        elif char == ')':
-            if stack.pop() == opening_index:
-                return i
-    return -1  # Indicates no matching closing parenthesis found
+
+    for i in range(len(s)):
+        c = s[i]
+
+        # If the scanned character is an operand, add it to the output string.
+        if ('a' <= c <= 'z') or ('A' <= c <= 'Z') or ('0' <= c <= '9'):
+            result.append(c)
+        # If the scanned character is an ‘(‘, push it to the stack.
+        elif c == '(':
+            stack.append(c)
+        # If the scanned character is an ‘)’, pop and add to the output string from the stack
+        # until an ‘(‘ is encountered.
+        elif c == ')':
+            while stack and stack[-1] != '(':
+                result.append(stack.pop())
+            stack.pop()  # Pop '('
+        # If an operator is scanned
+        else:
+            while stack and (prec(s[i]) < prec(stack[-1]) or
+                             (prec(s[i]) == prec(stack[-1]) and associativity(s[i]) == 'L')):
+                result.append(stack.pop())
+            stack.append(c)
+
+    # Pop all the remaining elements from the stack
+    while stack:
+        result.append(stack.pop())
+
+    print(''.join(result))
 
 
-# cut the string for 3 parts returning the part inside the between the indexes at index 1
-def cut_string_excluding_indices(s, index1, index2):
-    part1 = s[:index1]
-    part2 = s[index1 + 1:index2]
-    part3 = s[index2 + 1:]
-    return part1, part2, part3
+# Python program to evaluate value of a postfix expression
 
 
-def create_tree(tree_node):
-    string = tree_node.value
+# Class to convert the expression
+class Evaluate:
 
-    i = 0
-    parts = []
+    # Constructor to initialize the class variables
+    def __init__(self, capacity):
+        self.top = -1
+        self.capacity = capacity
 
-    if '(' in string:
-        open_index = string.find('(')
-        close_index = find_closing_parenthesis(string, open_index)
-        first_part, second_part, third_part = cut_string_excluding_indices(string, open_index, close_index)
-        second_part_tree = TreeNode(second_part)
-        create_tree(second_part_tree)
+        # This array is used a stack
+        self.array = []
 
-        second_part = calculate_tree(second_part_tree)
-        string = first_part + str(second_part) + third_part
+    # Check if the stack is empty
+    def isEmpty(self):
+        return True if self.top == -1 else False
 
-    op_found = False
-    while i < len(op_arr) and not op_found:
-        if op_arr[i] in string:
-            parts = string.split(op_arr[i], 1)
-            parts.append(op_arr[i])
-            op_found = True
-        i += 1
+    # Return the value of the top of the stack
+    def peek(self):
+        return self.array[-1]
 
-    if len(parts) == 3:
-        tree_node.right = TreeNode(parts[0])
-        tree_node.left = TreeNode(parts[1])
-        tree_node.value = parts[2]
+    # Pop the element from the stack
+    def pop(self):
+        if not self.isEmpty():
+            self.top -= 1
+            return self.array.pop()
+        else:
+            return "$"
 
-        create_tree(tree_node.right)
-        create_tree(tree_node.left)
+    # Push the element to the stack
+    def push(self, op):
+        self.top += 1
+        self.array.append(op)
+
+    # The main function that converts given infix expression
+    # to postfix expression
+    def evaluatePostfix(self, exp):
+
+        # Iterate over the expression for conversion
+        for i in exp:
+
+            # If the scanned character is an operand
+            # (number here) push it to the stack
+            if i.isdigit():
+                self.push(i)
+
+            # If the scanned character is an operator,
+            # pop two elements from stack and apply it.
+            else:
+                val1 = self.pop()
+                val2 = self.pop()
+                self.push(str(eval(val2 + i + val1)))
+
+        return int(self.pop())
+
+
+# Driver code
+if __name__ == '__main__':
+    exp = "231*+9-"
+    obj = Evaluate(len(exp))
+
+    # Function call
+    print("postfix evaluation: %d" % (obj.evaluatePostfix(exp)))
+
+
+# This code is contributed by Nikhil Kumar Singh(nickzuck_007)
 
 
 def main():
-    string = "90/10"
-    tree_node = TreeNode(string)
-    create_tree(tree_node)
-    num = calculate_tree(tree_node)
-    print(num)
+    # Driver code
+    exp = "a+b*(c^d-e)^(f+g*h)-i"
+
+    # Function call
+    infix_to_postfix(exp)
 
 
 if __name__ == "__main__":

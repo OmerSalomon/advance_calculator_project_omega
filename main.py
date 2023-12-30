@@ -96,6 +96,11 @@ def cut_string_excluding_indices(s, index1, index2):
     return part1, part2, part3
 
 
+def convert_to_int(string):
+    f_num = float(string)
+    return int(f_num)
+
+
 def create_tree(tree_node):
     string = tree_node.value
 
@@ -121,19 +126,16 @@ def create_tree(tree_node):
         i += 1
 
     if not middle_operators_found:
-        if '!' in string:
+        if '~' in string and '!' in string:
             string = string.replace('!', '')
-            tree_node.value = factorial(int(string))
+            string = string.replace('~', '')
+            tree_node.value = -factorial(convert_to_int(string))
+        elif '!' in string:
+            string = string.replace('!', '')
+            tree_node.value = factorial(convert_to_int(string))
         elif '~' in string:
             string = string.replace('~', '')
-            tree_node.value = -int(string)
-        elif '~' in string and '!' in string:
-            string = string.replace('!', '')
-            string = string.replace('~', '')
-            tree_node.value = -factorial(int(string))
-
-
-
+            tree_node.value = -convert_to_int(string)
 
 
     if len(parts) == 3:
@@ -146,7 +148,7 @@ def create_tree(tree_node):
 
 
 def main():
-    string = "10+5!"
+    string = "3+~9"
     tree_node = TreeNode(string)
     create_tree(tree_node)
     num = calculate_tree(tree_node)

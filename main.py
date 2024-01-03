@@ -1,11 +1,13 @@
 import math
 
 
+# return dictionary of single operand operators as key and their power as values
 def get_single_operand_operators_list():
     single_operand_operators = ['!', '~']
     return single_operand_operators
 
 
+# return dictionary of double operand operators as key and their power as values
 def get_operator_dict():
     my_dict = {
         '+': 1,
@@ -23,6 +25,18 @@ def get_operator_dict():
     return my_dict
 
 
+# returning n!
+def factorial(n: float) -> int:
+    if n.is_integer() and n < 0:
+        raise ValueError("There is no factorial for non native number")
+    n = int(n)
+    result = 1
+    for i in range(2, n + 1):
+        result *= i
+    return result
+
+
+# returning the calculated value of operators that affect two operand
 def double_operand_culc(val_1: float, val_2: float, operator: chr) -> float:
     val_1 = float(val_1)
     val_2 = float(val_2)
@@ -51,16 +65,7 @@ def double_operand_culc(val_1: float, val_2: float, operator: chr) -> float:
             return val_1
 
 
-def factorial(n: float) -> int:
-    if n.is_integer() and n < 0:
-        raise ValueError("There is no factorial for non native number")
-    n = int(n)
-    result = 1
-    for i in range(2, n + 1):
-        result *= i
-    return result
-
-
+# returning the calculated value of operators that affect one operand
 def single_operand_culc(val: float, operator: chr) -> float:
     val = float(val)
     if operator == '~':
@@ -69,6 +74,7 @@ def single_operand_culc(val: float, operator: chr) -> float:
         return factorial(val)
 
 
+# Calculates the top values in the value stack according to the type of the operator
 def pop_and_culc(values: list, operators: list):
     op = operators.pop()
     if op in get_single_operand_operators_list():
@@ -81,7 +87,9 @@ def pop_and_culc(values: list, operators: list):
         result = double_operand_culc(val_1, val_2, op)
         return result
 
-# replace
+
+# Reducing minuses and pluses
+# Returning reduced string
 def fix_plus_minus(s: str) -> str:
     while ('++' in s) or ('--' in s) or ('-+' in s) or ('+-' in s):
         s = s.replace('++', '+')

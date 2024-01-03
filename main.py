@@ -99,12 +99,42 @@ def fix_plus_minus(s: str) -> str:
 
     return s
 
+def check_for_invalid_char(exp: str, operator_list: set) -> list:
+    invalid_chars = []
+    for char in exp:
+        if not (char.isdigit() or char in operator_list or ')'):
+            invalid_chars.append(char)
+    return invalid_chars
+
+def is_parenthesis_balanced(input_string):
+    balance = 0
+
+    for char in input_string:
+        if char == '(':
+            balance += 1
+        elif char == ')':
+            balance -= 1
+            if balance < 0:
+                return False
+
+    return balance == 0
+
+
+
 
 # return the evaluate value of the expression
 def evaluate_exp(exp: str, op_dict: dict) -> float:
     exp = fix_plus_minus(exp)
     values = []
     operators = []
+
+    invalid_chars = check_for_invalid_char(exp, get_operator_dict().keys())
+    if (len(invalid_chars) != 0):
+        raise ValueError(f'{invalid_chars} are invalid chars')
+
+    if not is_parenthesis_balanced(exp):
+        raise ValueError('parenthesis are not balanced')
+
 
     for char in exp:
         if char.isdigit():
@@ -128,11 +158,22 @@ def evaluate_exp(exp: str, op_dict: dict) -> float:
 
     return values.pop()
 
-
 def main():
-    exp = '33'
-    result = evaluate_exp(exp, get_operator_dict())
-    print(result)
+    print('Enter expression')
+    exp = input()
+    while exp != 'exist':
+        try:
+            result = evaluate_exp(exp, get_operator_dict())
+            print(result)
+        except ValueError as e:
+            print(e)
+        except Exception as e:
+            print('something went wrong')
+
+
+        print('')
+        print('Enter expression')
+        exp = input()
 
 
 if __name__ == "__main__":

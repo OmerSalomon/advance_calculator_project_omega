@@ -1,130 +1,112 @@
 import math
 
-op_level_1 = ['+', '-']
-op_level_2 = ['*', '/']
-op_level_3 = ['^']
-op_level_4 = ['%']
-op_level_5 = ['@', '$', '&']
-op_level_6 = ['~', '!']
+def get_single_operand_operators_list():
+    single_operand_operators = ['!', '~']
+    return single_operand_operators
 
-op_arr = op_level_1 + op_level_2 + op_level_3 + op_level_4 + op_level_5 + op_level_6
+def get_operator_dict():
+    my_dict = {
+        '+': 1,
+        '-': 1,
+        '/': 2,
+        '*': 2,
+        '^': 3,
+        '@': 5,
+        '&': 5,
+        '!': 6,
+        '~': 6,
+        '(': 0
+    }
 
-number_chars_arr = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+    return my_dict
 
+def double_operand_culc(val_1: float, val_2: float, operator: chr) -> float:
+    val_1 = float(val_1)
+    val_2 = float(val_2)
 
-class TreeNode:
-    def __init__(self, value):
-        self.value = value
-        self.left = None
-        self.right = None
-
-
-def calculate_tree(node):
-    if node.left is None and node.right is None:
-        return float(node.value)  # Assuming the node is an operand (number)
-
-    left_val = calculate_tree(node.left)
-    right_val = calculate_tree(node.right)
-
-    if node.value == '+':
-        return right_val + left_val
-    elif node.value == '-':
-        return right_val - left_val
-    elif node.value == '*':
-        return right_val * left_val
-    elif node.value == '/':
-        return right_val / left_val
-    elif node.value == '^':
-        return math.pow(right_val, left_val)
-    elif node.value == '@':
-        return (right_val + left_val) / 2
-    elif node.value == '$':
-        if right_val > left_val:
-            return right_val
+    if operator == '+':
+        return val_2 + val_1
+    if operator == '-':
+        return val_2 - val_1
+    if operator == '/':
+        return val_2 / val_1
+    if operator == '*':
+        return val_2 * val_1
+    if operator == '^':
+        return math.pow(val_2, val_1)
+    if operator == '@':
+        return (val_2 + val_1) / 2
+    if operator == '$':
+        if val_2 > val_1:
+            return val_2
         else:
-            return left_val
-    elif node.value == '&':
-        if right_val < left_val:
-            return right_val
+            return val_1
+    if operator == '&':
+        if val_2 < val_1:
+            return val_2
         else:
-            return left_val
-    elif node.value == '%':
-        return right_val % left_val
+            return val_1
+
+def factorial(n: float) -> int:
+    if n.is_integer() and n < 0:
+        raise ValueError("There is no factorial for non native number")
+    n = int(n)
+    result = 1
+    for i in range(2, n + 1):
+        result *= i
+    return result
+
+def single_operand_culc(val: float, operator: chr) -> float:
+    val = float(val)
+    if operator == '~':
+        return -val
+    elif operator == '!':
+        return factorial(val)
 
 
-def print_tree(node, level=0, prefix="Root: "):
-    if node is not None:
-        print(" " * 4 * level + prefix + str(node.value))
-        if node.left is not None or node.right is not None:
-            if node.left:
-                print_tree(node.left, level + 1, "L--- ")
-            else:
-                print(" " * 4 * (level + 1) + "L--- None")
 
-            if node.right:
-                print_tree(node.right, level + 1, "R--- ")
-            else:
-                print(" " * 4 * (level + 1) + "R--- None")
+def pop_and_culc(values: list, operators: list):
+    op = operators.pop()
+    if op in get_single_operand_operators_list():
+        val = values.pop()
+        result = single_operand_culc(val, op)
+        return result
+    else:
+        val_1 = values.pop()
+        val_2 = values.pop()
+        result = double_operand_culc(val_1, val_2, op)
+        return result
 
+def calculate_exp(exp: str, op_dict: dict) -> float:
+    values = []
+    operators = []
 
-def find_closing_parenthesis(expression, opening_index):
-    stack = []
-    for i, char in enumerate(expression):
-        if char == '(':
-            stack.append(i)
+    for char in exp:
+        if char.isdigit():
+            values.append(char)
+        elif char == '(':
+            operators.append(char)
+        elif char in op_dict.keys():
+            while len(operators) != 0 and op_dict[operators[-1]] >= op_dict[char]:
+                result = pop_and_culc(values, operators)
+                values.append(result)
+            operators.append(char)
         elif char == ')':
-            if stack.pop() == opening_index:
-                return i
-    return -1  # Indicates no matching closing parenthesis found
+            while operators[-1] != '(':
+                result = pop_and_culc(values, operators)
+                values.append(result)
+            operators.pop()
 
+    while len(operators) != 0:
+        result = pop_and_culc(values, operators)
+        values.append(result)
 
-# cut the string for 3 parts returning the part inside the between the indexes at index 1
-def cut_string_excluding_indices(s, index1, index2):
-    part1 = s[:index1]
-    part2 = s[index1 + 1:index2]
-    part3 = s[index2 + 1:]
-    return part1, part2, part3
-
-
-def create_tree(tree_node):
-    string = tree_node.value
-
-    i = 0
-    parts = []
-
-    if '(' in string:
-        open_index = string.find('(')
-        close_index = find_closing_parenthesis(string, open_index)
-        first_part, second_part, third_part = cut_string_excluding_indices(string, open_index, close_index)
-        second_part_tree = TreeNode(second_part)
-        create_tree(second_part_tree)
-
-        second_part = calculate_tree(second_part_tree)
-        string = first_part + str(second_part) + third_part
-
-    op_found = False
-    while i < len(op_arr) and not op_found:
-        if op_arr[i] in string:
-            parts = string.split(op_arr[i], 1)
-            parts.append(op_arr[i])
-            op_found = True
-        i += 1
-
-    if len(parts) == 3:
-        tree_node.right = TreeNode(parts[0])
-        tree_node.left = TreeNode(parts[1])
-        tree_node.value = parts[2]
-
-        create_tree(tree_node.right)
-        create_tree(tree_node.left)
-
+    return values.pop()
 
 def main():
-    string = "90/10"
-    tree_node = TreeNode(string)
-    create_tree(tree_node)
-    num = calculate_tree(tree_node)
-    print(num)
+    exp = '3*~(5!)'
+    result = calculate_exp(exp, get_operator_dict())
+    print(result)
 
 
 if __name__ == "__main__":

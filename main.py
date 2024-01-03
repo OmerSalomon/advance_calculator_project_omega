@@ -81,8 +81,8 @@ def pop_and_culc(values: list, operators: list):
         result = double_operand_culc(val_1, val_2, op)
         return result
 
-
-def fix_plus_minus(s: str):
+# replace
+def fix_plus_minus(s: str) -> str:
     while ('++' in s) or ('--' in s) or ('-+' in s) or ('+-' in s):
         s = s.replace('++', '+')
         s = s.replace('--', '+')
@@ -91,7 +91,9 @@ def fix_plus_minus(s: str):
 
     return s
 
-def calculate_exp(exp: str, op_dict: dict) -> float:
+
+# return the evaluate value of the expression
+def evaluate_exp(exp: str, op_dict: dict) -> float:
     exp = fix_plus_minus(exp)
     values = []
     operators = []
@@ -121,7 +123,7 @@ def calculate_exp(exp: str, op_dict: dict) -> float:
 
 def main():
     exp = '33'
-    result = calculate_exp(exp, get_operator_dict())
+    result = evaluate_exp(exp, get_operator_dict())
     print(result)
 
 

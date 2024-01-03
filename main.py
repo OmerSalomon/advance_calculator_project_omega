@@ -87,6 +87,24 @@ def pop_and_culc(values: list, operators: list):
         result = double_operand_culc(val_1, val_2, op)
         return result
 
+def split_expression(expression):
+    result = []
+    number = ''
+
+    for char in expression:
+        if char.isdigit() or char == '.':
+            number += char
+        else:
+            if number:
+                result.append(number)
+                number = ''
+            if char in '+-*/()':
+                result.append(char)
+    if number:
+        result.append(number)
+
+    return result
+
 
 # Reducing minuses and pluses
 # Returning reduced string
@@ -119,7 +137,15 @@ def is_parenthesis_balanced(input_string):
 
     return balance == 0
 
-
+# try to convert s to float
+# if it succeeds, it returns true
+# if not it returns false
+def is_number(s: str) -> bool:
+    try:
+        float(s)
+        return True
+    except ValueError:
+        return False
 
 
 # return the evaluate value of the expression
@@ -135,18 +161,19 @@ def evaluate_exp(exp: str, op_dict: dict) -> float:
     if not is_parenthesis_balanced(exp):
         raise ValueError('parenthesis are not balanced')
 
+    exp_tokens = split_expression(exp)
 
-    for char in exp:
-        if char.isdigit():
-            values.append(char)
-        elif char == '(':
-            operators.append(char)
-        elif char in op_dict.keys():
-            while len(operators) != 0 and op_dict[operators[-1]] >= op_dict[char]:
+    for token in exp_tokens:
+        if is_number(token):
+            values.append(token)
+        elif token == '(':
+            operators.append(token)
+        elif token in op_dict.keys():
+            while len(operators) != 0 and op_dict[operators[-1]] >= op_dict[token]:
                 result = pop_and_culc(values, operators)
                 values.append(result)
-            operators.append(char)
-        elif char == ')':
+            operators.append(token)
+        elif token == ')':
             while operators[-1] != '(':
                 result = pop_and_culc(values, operators)
                 values.append(result)
@@ -158,7 +185,7 @@ def evaluate_exp(exp: str, op_dict: dict) -> float:
 
     return values.pop()
 
-def main():
+def start():
     print('Enter expression')
     exp = input()
     while exp != 'exist':
@@ -170,10 +197,9 @@ def main():
         except Exception as e:
             print('something went wrong')
 
-
-        print('')
-        print('Enter expression')
-        exp = input()
+def main():
+    exp = '3*3.1'
+    print(evaluate_exp(exp, get_operator_dict()))
 
 
 if __name__ == "__main__":

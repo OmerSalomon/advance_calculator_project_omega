@@ -19,7 +19,8 @@ def get_operator_dict():
         '&': 5,
         '!': 6,
         '~': 6,
-        '(': 0
+        '(': 0,
+        ')': 0
     }
 
     return my_dict
@@ -98,7 +99,7 @@ def split_expression(expression):
             if number:
                 result.append(number)
                 number = ''
-            if char in '+-*/()':
+            if char in get_operator_dict().keys():
                 result.append(char)
     if number:
         result.append(number)
@@ -168,16 +169,17 @@ def evaluate_exp(exp: str, op_dict: dict) -> float:
             values.append(token)
         elif token == '(':
             operators.append(token)
-        elif token in op_dict.keys():
-            while len(operators) != 0 and op_dict[operators[-1]] >= op_dict[token]:
-                result = pop_and_culc(values, operators)
-                values.append(result)
-            operators.append(token)
         elif token == ')':
             while operators[-1] != '(':
                 result = pop_and_culc(values, operators)
                 values.append(result)
             operators.pop()
+        elif token in op_dict.keys():
+            while len(operators) != 0 and op_dict[operators[-1]] >= op_dict[token]:
+                result = pop_and_culc(values, operators)
+                values.append(result)
+            operators.append(token)
+
 
     while len(operators) != 0:
         result = pop_and_culc(values, operators)
@@ -197,8 +199,11 @@ def start():
         except Exception as e:
             print('something went wrong')
 
+        exp = input()
+
+
 def main():
-    exp = '3*3.1'
+    exp = '(4)!'
     print(evaluate_exp(exp, get_operator_dict()))
 
 

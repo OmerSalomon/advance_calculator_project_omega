@@ -203,8 +203,7 @@ def start():
 
 
 def main():
-    exp = '(4)!'
-    print(evaluate_exp(exp, get_operator_dict()))
+    start()
 
 
 if __name__ == "__main__":

@@ -26,6 +26,7 @@ def get_operator_dict():
         '/': 2,
         '*': 2,
         '^': 3,
+        '%': 4,
         '@': 5,
         '&': 5,
         '!': 6,
@@ -75,6 +76,8 @@ def double_operand_culc(val_1: float, val_2: float, operator: chr) -> float:
             return val_2
         else:
             return val_1
+    if operator == '%':
+        return val_2 % val_1
 
 
 # returning the calculated value of operators that affect one operand
@@ -195,6 +198,10 @@ def start():
 
         print('Enter another expression (or "exit" to quit):')
         exp = input()
+
+
+def add(num1, num2):
+    return num1 + num2
 
 
 def main():

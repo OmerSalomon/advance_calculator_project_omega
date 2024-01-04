@@ -1,5 +1,7 @@
 import math
 
+import vld
+
 
 # return list of all the operators that can not be next to each other
 def get_non_adjacent_operator_list():
@@ -128,38 +130,6 @@ def fix_plus_minus(s: str) -> str:
 
     return s
 
-
-def check_for_invalid_char(exp: str, operator_list: set) -> list:
-    invalid_chars = []
-    for char in exp:
-        if not (char.isdigit() or char in operator_list or ')'):
-            invalid_chars.append(char)
-    return invalid_chars
-
-
-def is_parenthesis_balanced(input_string):
-    balance = 0
-
-    for char in input_string:
-        if char == '(':
-            balance += 1
-        elif char == ')':
-            balance -= 1
-            if balance < 0:
-                return False
-
-    return balance == 0
-
-
-# returns list of invalid adjacent operators
-def are_chars_non_adjacent(input_string: str, char_list: list[chr]) -> list:
-    adjacent_operators_list = []
-    for i in range(len(input_string) - 1):
-        if input_string[i] in char_list and input_string[i] == input_string[i + 1]:
-            adjacent_operators_list.append(input_string[i] + input_string[i + 1])
-    return adjacent_operators_list
-
-
 def is_number(s: str) -> bool:
     try:
         float(s)
@@ -174,16 +144,16 @@ def evaluate_exp(exp: str, op_dict: dict) -> float:
     values = []
     operators = []
 
-    invalid_chars = check_for_invalid_char(exp, get_operator_dict().keys())
+    invalid_chars = vld.get_invalid_chars(exp, get_operator_dict().keys())
     if (len(invalid_chars) != 0):
         raise ValueError(f'{invalid_chars} are invalid chars')
 
-    if not is_parenthesis_balanced(exp):
+    if not vld.is_parenthesis_balanced(exp):
         raise ValueError('parenthesis are not balanced')
 
-    adjacent_operators_list = are_chars_non_adjacent(exp, get_non_adjacent_operator_list())
-    if len(adjacent_operators_list) > 0:
-        raise ValueError(f'{adjacent_operators_list} those operators can not be next to each other')
+    misplaced_operators = vld.get_misplaced_operators(exp, get_non_adjacent_operator_list())
+    if len(misplaced_operators) > 0:
+        raise ValueError(f'{misplaced_operators} those operators can not be next to each other')
 
     exp_tokens = split_expression(exp)
 

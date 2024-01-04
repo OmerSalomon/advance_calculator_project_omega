@@ -1,6 +1,15 @@
 import math
 
 
+# return list of all the operators that can not be next to each other
+def get_non_adjacent_operator_list():
+    operator_list = list(get_operator_dict().keys()).copy()
+    adjacent_operator_list = ['+', '-', '(', ')']
+    non_adjacent_operator_list = [item for item in operator_list if item not in adjacent_operator_list]
+
+    return non_adjacent_operator_list
+
+
 # return dictionary of single operand operators as key and their power as values
 def get_single_operand_operators_list():
     single_operand_operators = ['!', '~']
@@ -88,6 +97,7 @@ def pop_and_culc(values: list, operators: list):
         result = double_operand_culc(val_1, val_2, op)
         return result
 
+
 def split_expression(expression):
     result = []
     number = ''
@@ -118,12 +128,14 @@ def fix_plus_minus(s: str) -> str:
 
     return s
 
+
 def check_for_invalid_char(exp: str, operator_list: set) -> list:
     invalid_chars = []
     for char in exp:
         if not (char.isdigit() or char in operator_list or ')'):
             invalid_chars.append(char)
     return invalid_chars
+
 
 def is_parenthesis_balanced(input_string):
     balance = 0
@@ -138,9 +150,16 @@ def is_parenthesis_balanced(input_string):
 
     return balance == 0
 
-# try to convert s to float
-# if it succeeds, it returns true
-# if not it returns false
+
+# returns list of invalid adjacent operators
+def are_chars_non_adjacent(input_string: str, char_list: list[chr]) -> list:
+    adjacent_operators_list = []
+    for i in range(len(input_string) - 1):
+        if input_string[i] in char_list and input_string[i] == input_string[i + 1]:
+            adjacent_operators_list.append(input_string[i] + input_string[i + 1])
+    return adjacent_operators_list
+
+
 def is_number(s: str) -> bool:
     try:
         float(s)
@@ -162,6 +181,10 @@ def evaluate_exp(exp: str, op_dict: dict) -> float:
     if not is_parenthesis_balanced(exp):
         raise ValueError('parenthesis are not balanced')
 
+    adjacent_operators_list = are_chars_non_adjacent(exp, get_non_adjacent_operator_list())
+    if len(adjacent_operators_list) > 0:
+        raise ValueError(f'{adjacent_operators_list} those operators can not be next to each other')
+
     exp_tokens = split_expression(exp)
 
     for token in exp_tokens:
@@ -180,25 +203,27 @@ def evaluate_exp(exp: str, op_dict: dict) -> float:
                 values.append(result)
             operators.append(token)
 
-
     while len(operators) != 0:
         result = pop_and_culc(values, operators)
         values.append(result)
 
     return values.pop()
 
+
 def start():
-    print('Enter expression')
+    print('Enter expression (type "exit" to quit):')
     exp = input()
-    while exp != 'exist':
+
+    while exp != 'exit':
         try:
             result = evaluate_exp(exp, get_operator_dict())
             print(result)
         except ValueError as e:
-            print(e)
+            print(f"Value Error: {e}")
         except Exception as e:
-            print('something went wrong')
+            print(f"An error occurred: {e}")
 
+        print('Enter another expression (or "exit" to quit):')
         exp = input()
 
 

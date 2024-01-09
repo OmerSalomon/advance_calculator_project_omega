@@ -14,24 +14,25 @@ def get_non_adjacent_operator_list():
 
 # return dictionary of single operand operators as key and their power as values
 def get_single_operand_operators_list():
-    single_operand_operators = ['!', '~', '#']
+    single_operand_operators = ['!', '~', '#', 'u']
     return single_operand_operators
 
 
 # return dictionary of double operand operators as key and their power as values
-def get_operator_dict():
+def get_operator_dict() -> dict[str, int]:
     my_dict = {
         '+': 1,
         '-': 1,
         '/': 2,
         '*': 2,
         '^': 3,
-        '%': 4,
-        '@': 5,
-        '&': 5,
-        '!': 6,
-        '~': 6,
-        '#': 6,
+        'u': 4,
+        '%': 5,
+        '@': 6,
+        '&': 6,
+        '!': 7,
+        '~': 7,
+        '#': 7,
         '(': 0,
         ')': 0
     }
@@ -95,6 +96,8 @@ def single_operand_culc(val: float, operator: chr) -> float:
         for digit in val:
             res += int(digit)
         return res
+    elif operator == 'u':
+        return -val
 
 
 # Calculates the top values in the value stack according to the type of the operator
@@ -141,6 +144,27 @@ def fix_plus_minus(s: str) -> str:
 
     return s
 
+
+# this function locate every unary minus and replace it with 'u' operator
+def replace_unary_minuses_with_u(tokens: list) -> list:
+    if len(tokens) <= 1:
+        return tokens
+
+    if tokens[0] == '-' and (is_number(tokens[1]) or tokens[1] == '(' or tokens[1] == ')'):
+        tokens[0] = 'u'
+
+    i = 1
+    while i < len(tokens) - 1:
+        if tokens[i] == '-':
+            right_ne = tokens[i + 1]
+            left_ne = tokens[i - 1]
+            if left_ne in get_operator_dict() and (is_number(left_ne) or left_ne == '(' or right_ne == ')'):
+                tokens[i] = 'u'
+        i += 1
+
+    return tokens
+
+
 def is_number(s: str) -> bool:
     try:
         float(s)
@@ -166,9 +190,10 @@ def evaluate_exp(exp: str, op_dict: dict) -> float:
     if len(misplaced_operators) > 0:
         raise ValueError(f'{misplaced_operators} those operators can not be next to each other')
 
-    exp_tokens = split_expression(exp)
+    tokens = split_expression(exp)
+    tokens = replace_unary_minuses_with_u(tokens)
 
-    for token in exp_tokens:
+    for token in tokens:
         if is_number(token):
             values.append(token)
         elif token == '(':

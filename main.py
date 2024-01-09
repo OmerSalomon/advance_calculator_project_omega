@@ -14,7 +14,7 @@ def get_non_adjacent_operator_list():
 
 # return dictionary of single operand operators as key and their power as values
 def get_single_operand_operators_list():
-    single_operand_operators = ['!', '~']
+    single_operand_operators = ['!', '~', '#']
     return single_operand_operators
 
 
@@ -31,6 +31,7 @@ def get_operator_dict():
         '&': 5,
         '!': 6,
         '~': 6,
+        '#': 6,
         '(': 0,
         ')': 0
     }
@@ -87,6 +88,13 @@ def single_operand_culc(val: float, operator: chr) -> float:
         return -val
     elif operator == '!':
         return factorial(val)
+    elif operator == '#':
+        val = str(val)
+        val = val.replace('.', '')
+        res = 0
+        for digit in val:
+            res += int(digit)
+        return res
 
 
 # Calculates the top values in the value stack according to the type of the operator

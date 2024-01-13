@@ -2,11 +2,10 @@ import math
 
 import vld
 
-
 # return list of all the operators that can not be next to each other
 def get_non_adjacent_operator_list():
     operator_list = list(get_operator_dict().keys()).copy()
-    adjacent_operator_list = ['+', '-', '(', ')']
+    adjacent_operator_list = ['+', '-', '(', ')', '!']
     non_adjacent_operator_list = [item for item in operator_list if item not in adjacent_operator_list]
 
     return non_adjacent_operator_list
@@ -26,13 +25,13 @@ def get_operator_dict() -> dict[str, int]:
         '/': 2,
         '*': 2,
         '^': 3,
-        'u': 4,
-        '%': 5,
-        '@': 6,
-        '&': 6,
-        '!': 7,
-        '~': 7,
-        '#': 7,
+        'u': 3.5,
+        '%': 4,
+        '@': 5,
+        '&': 5,
+        '!': 6,
+        '~': 6,
+        '#': 6,
         '(': 0,
         ')': 0
     }
@@ -145,24 +144,27 @@ def fix_plus_minus(s: str) -> str:
     return s
 
 
-# this function locate every unary minus and replace it with 'u' operator
-def replace_unary_minuses_with_u(tokens: list) -> list:
-    if len(tokens) <= 1:
-        return tokens
+def replace_unary_minuses_with_u(exp : str) -> str:
+    if len(exp) <= 1:
+        return exp
 
-    if tokens[0] == '-' and (is_number(tokens[1]) or tokens[1] == '(' or tokens[1] == ')'):
-        tokens[0] = 'u'
+    if exp[0] == '-' and (is_number(exp[1]) or exp[1] == '(' or exp[1] == ')'):
+        exp[0] = 'u'
 
-    i = 1
-    while i < len(tokens) - 1:
-        if tokens[i] == '-':
-            right_ne = tokens[i + 1]
-            left_ne = tokens[i - 1]
-            if left_ne in get_operator_dict() and (is_number(left_ne) or left_ne == '(' or right_ne == ')'):
-                tokens[i] = 'u'
+    i = 0
+    while i < len(exp) - 1:
+        if exp[i] == '-':
+            right_ne = exp[i + 1]
+            left_ne = exp[i - 1]
+            if left_ne in get_operator_dict() or left_ne == '(' or left_ne == ')':
+                if right_ne.isdigit():
+                    exp = exp[:i] + 'u' + exp[i+1:]
         i += 1
 
-    return tokens
+    return exp
+
+# this function locate every unary minus and replace it with 'u' operator
+
 
 
 def is_number(s: str) -> bool:
@@ -175,9 +177,12 @@ def is_number(s: str) -> bool:
 
 # return the evaluate value of the expression
 def evaluate_exp(exp: str, op_dict: dict) -> float:
-    exp = fix_plus_minus(exp)
     values = []
     operators = []
+
+    exp = replace_unary_minuses_with_u(exp)
+    exp = fix_plus_minus(exp)
+
 
     invalid_chars = vld.get_invalid_chars(exp, get_operator_dict().keys())
     if (len(invalid_chars) != 0):
@@ -191,7 +196,6 @@ def evaluate_exp(exp: str, op_dict: dict) -> float:
         raise ValueError(f'{misplaced_operators} those operators can not be next to each other')
 
     tokens = split_expression(exp)
-    tokens = replace_unary_minuses_with_u(tokens)
 
     for token in tokens:
         if is_number(token):

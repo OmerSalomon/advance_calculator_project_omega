@@ -1,24 +1,17 @@
 import math
-
+import json
 import vld
 
-# return list of all the operators that can not be next to each other
-def get_non_adjacent_operator_list():
-    operator_list = list(get_operator_dict().keys()).copy()
-    adjacent_operator_list = ['+', '-', '(', ')', '!']
-    non_adjacent_operator_list = [item for item in operator_list if item not in adjacent_operator_list]
 
-    return non_adjacent_operator_list
-
-
-# return dictionary of single operand operators as key and their power as values
-def get_single_operand_operators_list():
-    single_operand_operators = ['!', '~', '#', 'u']
-    return single_operand_operators
+def get_parenthesis_dict() -> dict:
+    my_dict = {
+        '(': 0,
+        ')': 0
+    }
+    return my_dict
 
 
-# return dictionary of double operand operators as key and their power as values
-def get_operator_dict() -> dict[str, int]:
+def get_bin_operator_dict() -> dict:
     my_dict = {
         '+': 1,
         '-': 1,
@@ -29,14 +22,27 @@ def get_operator_dict() -> dict[str, int]:
         '%': 4,
         '@': 5,
         '&': 5,
+    }
+    return my_dict
+
+
+def get_un_operator_dict():
+    my_dict = {
+        'u': 3.5,
         '!': 6,
         '~': 6,
-        '#': 6,
-        '(': 0,
-        ')': 0
+        '#': 6
     }
-
     return my_dict
+
+
+# return dictionary of double operand operators as key and their power as values
+def get_operator_dict() -> dict[str, int]:
+    op_dict = {}
+    op_dict.update(get_un_operator_dict())
+    op_dict.update(get_bin_operator_dict())
+    op_dict.update(get_parenthesis_dict())
+    return op_dict
 
 
 # returning n!
@@ -102,7 +108,7 @@ def single_operand_culc(val: float, operator: chr) -> float:
 # Calculates the top values in the value stack according to the type of the operator
 def pop_and_culc(values: list, operators: list):
     op = operators.pop()
-    if op in get_single_operand_operators_list():
+    if op in get_un_operator_dict().keys():
         val = values.pop()
         result = single_operand_culc(val, op)
         return result
@@ -144,7 +150,7 @@ def fix_plus_minus(s: str) -> str:
     return s
 
 
-def replace_unary_minuses_with_u(exp : str) -> str:
+def replace_unary_minuses_with_u(exp: str) -> str:
     if len(exp) <= 1:
         return exp
 
@@ -158,13 +164,13 @@ def replace_unary_minuses_with_u(exp : str) -> str:
             left_ne = exp[i - 1]
             if left_ne in get_operator_dict() or left_ne == '(' or left_ne == ')':
                 if right_ne.isdigit():
-                    exp = exp[:i] + 'u' + exp[i+1:]
+                    exp = exp[:i] + 'u' + exp[i + 1:]
         i += 1
 
     return exp
 
-# this function locate every unary minus and replace it with 'u' operator
 
+# this function locate every unary minus and replace it with 'u' operator
 
 
 def is_number(s: str) -> bool:
@@ -183,7 +189,6 @@ def evaluate_exp(exp: str, op_dict: dict) -> float:
     exp = replace_unary_minuses_with_u(exp)
     exp = fix_plus_minus(exp)
 
-
     invalid_chars = vld.get_invalid_chars(exp, get_operator_dict().keys())
     if (len(invalid_chars) != 0):
         raise ValueError(f'{invalid_chars} are invalid chars')
@@ -191,7 +196,7 @@ def evaluate_exp(exp: str, op_dict: dict) -> float:
     if not vld.is_parenthesis_balanced(exp):
         raise ValueError('parenthesis are not balanced')
 
-    misplaced_operators = vld.get_misplaced_operators(exp, get_non_adjacent_operator_list())
+    misplaced_operators = vld.get_misplaced_operators(exp)
     if len(misplaced_operators) > 0:
         raise ValueError(f'{misplaced_operators} those operators can not be next to each other')
 
@@ -239,6 +244,10 @@ def start():
 
 def add(num1, num2):
     return num1 + num2
+
+
+def fun(val1, val2):
+    return val1 + val2
 
 
 def main():

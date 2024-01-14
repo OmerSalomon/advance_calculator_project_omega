@@ -44,8 +44,21 @@ def get_misplaced_operators(exp: str) -> list:
     operator_list = get_operator_dict().keys()
     adjacent_operators_list = []
     for i in range(len(exp) - 2):
-        if exp[i] in operator_list and exp[i+1] in operator_list:
-            if exp[i] in non_adjacent_operator or exp[i+1] in non_adjacent_operator:
+        if exp[i] in operator_list and exp[i + 1] in operator_list:
+            if exp[i] in non_adjacent_operator or exp[i + 1] in non_adjacent_operator:
                 adjacent_operators_list.append(exp[i] + exp[i + 1])
 
     return adjacent_operators_list
+
+
+def validate_exp(exp):
+    invalid_chars = get_invalid_chars(exp, get_operator_dict().keys())
+    if len(invalid_chars) != 0:
+        raise ValueError(f'{invalid_chars} are invalid chars')
+
+    if not is_parenthesis_balanced(exp):
+        raise ValueError('parenthesis are not balanced')
+
+    misplaced_operators = get_misplaced_operators(exp)
+    if len(misplaced_operators) > 0:
+        raise ValueError(f'{misplaced_operators} those operators can not be next to each other')

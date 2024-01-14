@@ -1,5 +1,6 @@
 import math
-import json
+
+import exp_manipulation
 import vld
 
 
@@ -140,34 +141,7 @@ def split_expression(expression):
 
 # Reducing minuses and pluses
 # Returning reduced string
-def fix_plus_minus(s: str) -> str:
-    while ('++' in s) or ('--' in s) or ('-+' in s) or ('+-' in s):
-        s = s.replace('++', '+')
-        s = s.replace('--', '+')
-        s = s.replace('-+', '-')
-        s = s.replace('+-', '-')
 
-    return s
-
-
-def replace_unary_minuses_with_u(exp: str) -> str:
-    if len(exp) <= 1:
-        return exp
-
-    if exp[0] == '-' and (is_number(exp[1]) or exp[1] == '(' or exp[1] == ')'):
-        exp[0] = 'u'
-
-    i = 0
-    while i < len(exp) - 1:
-        if exp[i] == '-':
-            right_ne = exp[i + 1]
-            left_ne = exp[i - 1]
-            if left_ne in get_operator_dict() or left_ne == '(' or left_ne == ')':
-                if right_ne.isdigit():
-                    exp = exp[:i] + 'u' + exp[i + 1:]
-        i += 1
-
-    return exp
 
 
 # this function locate every unary minus and replace it with 'u' operator
@@ -186,19 +160,10 @@ def evaluate_exp(exp: str, op_dict: dict) -> float:
     values = []
     operators = []
 
-    exp = replace_unary_minuses_with_u(exp)
-    exp = fix_plus_minus(exp)
+    vld.validate_exp(exp)
 
-    invalid_chars = vld.get_invalid_chars(exp, get_operator_dict().keys())
-    if (len(invalid_chars) != 0):
-        raise ValueError(f'{invalid_chars} are invalid chars')
-
-    if not vld.is_parenthesis_balanced(exp):
-        raise ValueError('parenthesis are not balanced')
-
-    misplaced_operators = vld.get_misplaced_operators(exp)
-    if len(misplaced_operators) > 0:
-        raise ValueError(f'{misplaced_operators} those operators can not be next to each other')
+    exp = exp_manipulation.replace_unary_minuses_with_u(exp)
+    exp = exp_manipulation.fix_plus_minus(exp)
 
     tokens = split_expression(exp)
 

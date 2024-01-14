@@ -54,6 +54,7 @@ def get_invalid_junction_operators(exp: str) -> list:
     return adjacent_operators_list
 
 
+# return list of right un operators that have number right to them
 def get_right_un_operator_placement(exp: str) -> list:
     invalid_operators = []
 
@@ -69,6 +70,7 @@ def get_right_un_operator_placement(exp: str) -> list:
     return invalid_operators
 
 
+# return list of left operators that have digit left to them
 def get_left_un_operator_placement(exp: str) -> list:
     invalid_operators = []
 
@@ -84,7 +86,7 @@ def get_left_un_operator_placement(exp: str) -> list:
 
     return invalid_operators
 
-
+# return list of all the empty parenthesis
 def check_empty_parenthesis(exp: str) -> list:
     empty_parenthesis_list = []
     for i in range(len(exp) - 1):

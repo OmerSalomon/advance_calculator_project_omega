@@ -1,5 +1,4 @@
 import math
-
 import exp_manipulation
 import vld
 
@@ -27,12 +26,25 @@ def get_bin_operator_dict() -> dict:
     return my_dict
 
 
-def get_un_operator_dict():
+def get_un_operator_dict() -> dict:
+    my_dict = {}
+    my_dict.update(get_right_un_operator())
+    my_dict.update(get_left_un_operator())
+    return my_dict
+
+
+def get_right_un_operator() -> dict:
     my_dict = {
-        'u': 3.5,
         '!': 6,
-        '~': 6,
         '#': 6
+    }
+    return my_dict
+
+
+def get_left_un_operator() -> dict:
+    my_dict = {
+        '~': 6,
+        'u': 3.5
     }
     return my_dict
 
@@ -58,7 +70,7 @@ def factorial(n: float) -> int:
 
 
 # returning the calculated value of operators that affect two operand
-def double_operand_culc(val_1: float, val_2: float, operator: chr) -> float:
+def bin_operand_culc(val_1: float, val_2: float, operator: chr) -> float:
     val_1 = float(val_1)
     val_2 = float(val_2)
 
@@ -89,7 +101,7 @@ def double_operand_culc(val_1: float, val_2: float, operator: chr) -> float:
 
 
 # returning the calculated value of operators that affect one operand
-def single_operand_culc(val: float, operator: chr) -> float:
+def un_operand_culc(val: float, operator: chr) -> float:
     val = float(val)
     if operator == '~':
         return -val
@@ -111,12 +123,12 @@ def pop_and_culc(values: list, operators: list):
     op = operators.pop()
     if op in get_un_operator_dict().keys():
         val = values.pop()
-        result = single_operand_culc(val, op)
+        result = un_operand_culc(val, op)
         return result
     else:
         val_1 = values.pop()
         val_2 = values.pop()
-        result = double_operand_culc(val_1, val_2, op)
+        result = bin_operand_culc(val_1, val_2, op)
         return result
 
 
@@ -139,14 +151,7 @@ def split_expression(expression):
     return result
 
 
-# Reducing minuses and pluses
-# Returning reduced string
-
-
-
 # this function locate every unary minus and replace it with 'u' operator
-
-
 def is_number(s: str) -> bool:
     try:
         float(s)
@@ -157,15 +162,15 @@ def is_number(s: str) -> bool:
 
 # return the evaluate value of the expression
 def evaluate_exp(exp: str, op_dict: dict) -> float:
-    values = []
-    operators = []
-
     vld.validate_exp(exp)
 
     exp = exp_manipulation.replace_unary_minuses_with_u(exp)
     exp = exp_manipulation.fix_plus_minus(exp)
 
     tokens = split_expression(exp)
+
+    values = []
+    operators = []
 
     for token in tokens:
         if is_number(token):
@@ -207,16 +212,20 @@ def start():
         exp = input()
 
 
-def add(num1, num2):
-    return num1 + num2
+def check():
+    print('Enter expression (type "exit" to quit):')
+    exp = input()
 
+    while exp != 'exit':
+        result = evaluate_exp(exp, get_operator_dict())
+        print(result)
 
-def fun(val1, val2):
-    return val1 + val2
+        print('Enter another expression (or "exit" to quit):')
+        exp = input()
 
 
 def main():
-    start()
+    check()
 
 
 if __name__ == "__main__":

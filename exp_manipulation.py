@@ -12,6 +12,12 @@ def fix_plus_minus(s: str) -> str:
 
 
 def replace_unary_minuses_with_u(exp: str) -> str:
+    if len(exp) <= 1:
+        return exp
+
+    if exp[0] == '-' and exp[1].isdigit() or exp[1] == '(':
+        exp = exp[:0] + 'u' + exp[0 + 1:]
+
     i = 0
     while i < len(exp) - 2:
         if exp[i] == '-':
@@ -23,6 +29,7 @@ def replace_unary_minuses_with_u(exp: str) -> str:
         i += 1
 
     return exp
+
 
 def manipulate_string(exp: str):
     exp = replace_unary_minuses_with_u(exp)

@@ -114,6 +114,31 @@ def get_parenthesis_near_digits(exp: str) -> list:
     return parenthesis_near_digits
 
 
+def has_only_operator(exp: str):
+    res = True
+    for char in exp:
+        if char.isdigit():
+            res = False
+
+    return res
+
+
+def get_misplaced_op_in_edge(exp: str) -> list:
+    misplaced_operators_in_edge = []
+    if len(exp) == 0:
+        return misplaced_operators_in_edge
+
+    start_char = exp[0]
+    if start_char in main.get_right_un_operator() or start_char in main.get_bin_operator_dict():
+        misplaced_operators_in_edge.append(start_char)
+
+    end_char = exp[-1]
+    if end_char in main.get_left_un_operator() or end_char in main.get_bin_operator_dict():
+        misplaced_operators_in_edge.append(end_char)
+
+    return misplaced_operators_in_edge
+
+
 def validate_exp(exp: str):
     if len(exp) == 0:
         raise ValueError(f'exp is empty')
@@ -144,3 +169,11 @@ def validate_exp(exp: str):
     parenthesis_near_digits = get_parenthesis_near_digits(exp)
     if len(parenthesis_near_digits) > 0:
         raise SyntaxError(f'{parenthesis_near_digits} those parenthesis can not be near those digits')
+
+    if has_only_operator(exp):
+        raise SyntaxError('the expression has only operators')
+
+    misplaced_op_in_edge = get_misplaced_op_in_edge(exp)
+    if len(misplaced_op_in_edge) > 0:
+        raise SyntaxError(f'those operator can not be on the edge')
+

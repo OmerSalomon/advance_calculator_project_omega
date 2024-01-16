@@ -37,7 +37,9 @@ def test_evaluate_exp(input_n, expected):
     ('~', SyntaxError),
     ('5~', SyntaxError),
     ('5+~', SyntaxError),
-    ('--', SyntaxError)
+    ('--', SyntaxError),
+    ('*--5', SyntaxError),
+    ('5-#5', SyntaxError)
 
 ])
 def test_invalid_input(input_value, expected_exception):

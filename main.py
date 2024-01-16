@@ -182,6 +182,8 @@ def evaluate_exp(exp: str, op_dict: dict) -> float:
                 result = pop_and_culc(values, operators)
                 values.append(result)
             operators.pop()
+        elif token in get_left_un_operator().keys():  # if token is from the left un type always add it to the operator stack
+            operators.append(token)
         elif token in op_dict.keys():
             while len(operators) != 0 and op_dict[operators[-1]] >= op_dict[token]:
                 result = pop_and_culc(values, operators)

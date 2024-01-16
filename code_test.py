@@ -8,7 +8,10 @@ from main import evaluate_exp, get_operator_dict
         ('3*3', 9),
         ('5-2', 3),
         ('555##', 6),
-        ('3+-3^2', )
+        ('3+-3^2', 12),
+        ('1234##', 1),
+        ('(-3-(-(-3)))', -6),
+        ('~-3', 3)
     ]
 )
 def test_evaluate_exp(input_n, expected):

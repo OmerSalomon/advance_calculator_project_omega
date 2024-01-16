@@ -5,7 +5,7 @@ import main
 def get_non_adjacent_operator_list() -> list:
     operator_list = main.get_operator_dict().keys()
     # all the operators that can be near each other
-    adjacent_operator_list = ['+', '-', '(', ')', '~']
+    adjacent_operator_list = ['+', '-', '(', ')']
     for char in main.get_un_operator_dict():
         adjacent_operator_list.append(char)
 

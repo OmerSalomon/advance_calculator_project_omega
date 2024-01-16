@@ -19,8 +19,10 @@ def get_non_adjacent_operator_list() -> list:
 def get_invalid_chars(exp: str) -> list:
     operator_list = main.get_operator_dict().keys()
     invalid_chars = []
+    if ' ' in exp:
+        invalid_chars.append(' ')
     for char in exp:
-        if not (char.isdigit() or char in operator_list or ')'):
+        if not (char.isdigit() or char in operator_list):
             invalid_chars.append(char)
     return invalid_chars
 
@@ -86,6 +88,7 @@ def get_left_un_operator_placement(exp: str) -> list:
 
     return invalid_operators
 
+
 # return list of all the empty parenthesis
 def check_empty_parenthesis(exp: str) -> list:
     empty_parenthesis_list = []
@@ -119,25 +122,25 @@ def validate_exp(exp: str):
     if len(invalid_chars) != 0:
         raise ValueError(f'{invalid_chars} are invalid chars')
 
+    empty_parenthesis = check_empty_parenthesis(exp)
+    if len(empty_parenthesis) > 0:
+        raise SyntaxError(f'{empty_parenthesis} those parenthesis are empty')
+
     if not is_parenthesis_balanced(exp):
-        raise ValueError('parenthesis are not balanced')
+        raise SyntaxError('parenthesis are not balanced')
 
     invalid_junction_operators = get_invalid_junction_operators(exp)
     if len(invalid_junction_operators) > 0:
-        raise ValueError(f'{invalid_junction_operators} those operators can not be next to each other')
+        raise SyntaxError(f'{invalid_junction_operators} those operators can not be next to each other')
 
     misplaced_left_un_operators = get_left_un_operator_placement(exp)
     if len(misplaced_left_un_operators):
-        raise ValueError(f'{misplaced_left_un_operators} are misplaced')
+        raise SyntaxError(f'{misplaced_left_un_operators} are misplaced')
 
     misplaced_right_un_operators = get_right_un_operator_placement(exp)
     if len(misplaced_right_un_operators) > 0:
-        raise ValueError(f'{misplaced_right_un_operators} are misplaced')
-
-    empty_parenthesis = check_empty_parenthesis(exp)
-    if len(empty_parenthesis) > 0:
-        raise ValueError(f'{empty_parenthesis} those parenthesis are empty')
+        raise SyntaxError(f'{misplaced_right_un_operators} are misplaced')
 
     parenthesis_near_digits = get_parenthesis_near_digits(exp)
     if len(parenthesis_near_digits) > 0:
-        raise ValueError(f'{parenthesis_near_digits} those parenthesis can not be near those digits')
+        raise SyntaxError(f'{parenthesis_near_digits} those parenthesis can not be near those digits')

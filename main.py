@@ -194,7 +194,8 @@ def evaluate_exp(exp: str, op_dict: dict) -> float:
         result = pop_and_culc(values, operators)
         values.append(result)
 
-    return values.pop()
+    evaluated_num = values.pop()
+    return round(evaluated_num, 3)
 
 
 def start():

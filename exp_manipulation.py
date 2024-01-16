@@ -16,7 +16,7 @@ def replace_unary_minuses_with_u(exp: str) -> str:
         return exp
 
     if exp[0] == '-' and exp[1].isdigit() or exp[1] == '(':
-        exp = exp[:0] + 'u' + exp[0 + 1:]
+        exp = exp[:0] + 'u' + exp[0 + 1:] # replace the first char of exp with 'u'
 
     i = 0
     while i < len(exp) - 1:

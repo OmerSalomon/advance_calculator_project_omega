@@ -19,13 +19,15 @@ def get_non_adjacent_operator_list() -> list:
 def get_invalid_chars(exp: str) -> list:
     operator_list = main.get_operator_dict().keys()
     invalid_chars = []
-    if ' ' in exp:
-        invalid_chars.append(' ')
-    for char in exp:
-        if not (char.isdigit() or char in operator_list):
+
+    if 'u' in exp:
+        invalid_chars.append('u')
+
+    for i in range(len(exp)):
+        char = exp[i]
+        if not (char.isdigit() or char in operator_list or char == '.'):
             invalid_chars.append(char)
     return invalid_chars
-
 
 # return true if the parenthesis are balanced
 # otherwise return false
@@ -129,8 +131,9 @@ def get_misplaced_op_in_edge(exp: str) -> list:
         return misplaced_operators_in_edge
 
     start_char = exp[0]
-    if start_char in main.get_right_un_operator() or start_char in main.get_bin_operator_dict():
-        misplaced_operators_in_edge.append(start_char)
+    if start_char[0] != '-':
+        if start_char in main.get_right_un_operator() or start_char in main.get_bin_operator_dict().keys():
+            misplaced_operators_in_edge.append(start_char)
 
     end_char = exp[-1]
     if end_char in main.get_left_un_operator() or end_char in main.get_bin_operator_dict():

@@ -16,16 +16,17 @@ def replace_unary_minuses_with_u(exp: str) -> str:
         return exp
 
     if exp[0] == '-' and exp[1].isdigit() or exp[1] == '(':
-        exp = exp[:0] + 'u' + exp[0 + 1:] # replace the first char of exp with 'u'
+        exp = exp[:0] + 'u' + exp[0 + 1:]  # replace the first char of exp with 'u'
 
     i = 0
     while i < len(exp) - 1:
         if exp[i] == '-':
             right_ne = exp[i + 1]
             left_ne = exp[i - 1]
-            if left_ne in main.get_operator_dict() or left_ne in main.get_parenthesis_dict():
-                if right_ne.isdigit() or right_ne in main.get_parenthesis_dict():
-                    exp = exp[:i] + 'u' + exp[i + 1:]
+            if not (left_ne in main.get_right_un_operator().keys()):
+                if left_ne in main.get_operator_dict() or left_ne in main.get_parenthesis_dict():
+                    if right_ne.isdigit() or right_ne in main.get_parenthesis_dict():
+                        exp = exp[:i] + 'u' + exp[i + 1:]
         i += 1
 
     return exp

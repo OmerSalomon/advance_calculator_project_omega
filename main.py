@@ -1,4 +1,4 @@
-import math
+import math_func
 import exp_manipulation
 import vld
 
@@ -18,10 +18,10 @@ def get_bin_operator_dict() -> dict:
         '/': 2,
         '*': 2,
         '^': 3,
-        'u': 3.5,
         '%': 4,
         '@': 5,
         '&': 5,
+        '$': 5
     }
     return my_dict
 
@@ -58,16 +58,6 @@ def get_operator_dict() -> dict[str, int]:
     return op_dict
 
 
-# returning n!
-def factorial(n: float) -> int:
-    if n.is_integer() and n < 0:
-        raise ValueError("There is no factorial for non native number")
-    n = int(n)
-    result = 1
-    for i in range(2, n + 1):
-        result *= i
-    return result
-
 
 # returning the calculated value of operators that affect two operand
 def bin_operand_culc(val_1: float, val_2: float, operator: chr) -> float:
@@ -83,19 +73,13 @@ def bin_operand_culc(val_1: float, val_2: float, operator: chr) -> float:
     if operator == '*':
         return val_2 * val_1
     if operator == '^':
-        return math.pow(val_2, val_1)
+        math_func.perform_pow(val_2, val_1)
     if operator == '@':
         return (val_2 + val_1) / 2
     if operator == '$':
-        if val_2 > val_1:
-            return val_2
-        else:
-            return val_1
+        return max(val_1, val_2)
     if operator == '&':
-        if val_2 < val_1:
-            return val_2
-        else:
-            return val_1
+        return min(val_1, val_2)
     if operator == '%':
         return val_2 % val_1
 
@@ -106,14 +90,9 @@ def un_operand_culc(val: float, operator: chr) -> float:
     if operator == '~':
         return -val
     elif operator == '!':
-        return factorial(val)
+        return math_func.factorial(val)
     elif operator == '#':
-        val = str(val)
-        val = val.replace('.', '')
-        res = 0
-        for digit in val:
-            res += int(digit)
-        return res
+        return math_func.perform_digit_addition(val)
     elif operator == 'u':
         return -val
 
@@ -200,7 +179,7 @@ def evaluate_exp(exp: str, op_dict: dict) -> float:
         result = pop_and_culc(values, operators)
         values.append(result)
 
-    evaluated_num = values.pop()
+    evaluated_num = float(values.pop())
     return round(evaluated_num, 3)
 
 

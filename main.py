@@ -58,7 +58,6 @@ def get_operator_dict() -> dict[str, int]:
     return op_dict
 
 
-
 # returning the calculated value of operators that affect two operand
 def bin_operand_culc(val_1: float, val_2: float, operator: chr) -> float:
     val_1 = float(val_1)
@@ -73,7 +72,7 @@ def bin_operand_culc(val_1: float, val_2: float, operator: chr) -> float:
     if operator == '*':
         return val_2 * val_1
     if operator == '^':
-        math_func.perform_pow(val_2, val_1)
+        return math_func.perform_pow(val_2, val_1)
     if operator == '@':
         return (val_2 + val_1) / 2
     if operator == '$':
@@ -213,7 +212,12 @@ def check():
 
 
 def main():
-    check()
+    try:
+        start()
+    except KeyboardInterrupt:
+        print("Caught keyboard interrupt. Exiting the program.")
+    except EOFError:
+        print("EOF error occurred. No input was given.")
 
 
 if __name__ == "__main__":

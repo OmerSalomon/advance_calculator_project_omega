@@ -1,3 +1,5 @@
+import sys
+
 import math_func
 import exp_manipulation
 import vld
@@ -49,7 +51,8 @@ def get_left_un_operator() -> dict:
     return my_dict
 
 
-# return dictionary of double operand operators as key and their power as values
+# return dictionary of double operand
+# operators as key and their power as values
 def get_operator_dict() -> dict[str, int]:
     op_dict = {}
     op_dict.update(get_un_operator_dict())
@@ -96,18 +99,24 @@ def un_operand_culc(val: float, operator: chr) -> float:
         return -val
 
 
-# Calculates the top values in the value stack according to the type of the operator
+# Calculates the top values in the value
+# stack according to the type of the operator
 def pop_and_culc(values: list, operators: list):
+    result = 0
+    max_float = sys.float_info.max
     op = operators.pop()
     if op in get_un_operator_dict().keys():
         val = values.pop()
         result = un_operand_culc(val, op)
-        return result
+        if result > max_float:
+            raise ValueError(f'result of {val} {op} is too large to be float')
     else:
         val_1 = values.pop()
         val_2 = values.pop()
         result = bin_operand_culc(val_1, val_2, op)
-        return result
+        if result > max_float:
+            raise ValueError(f'result of {val_1} {val_2} {op} is too large to be float')
+    return result
 
 
 def split_expression(expression):
@@ -157,21 +166,16 @@ def evaluate_exp(exp: str, op_dict: dict) -> float:
             operators.append(token)
         elif token == ')':
             while operators[-1] != '(':
-                try:
-                    result = pop_and_culc(values, operators)
-                    values.append(result)
-                except IndexError:
-                    raise SyntaxError('Unknown error syntax error accrued')
+                result = pop_and_culc(values, operators)
+                values.append(result)
             operators.pop()
-        elif token in get_left_un_operator().keys():  # if token is from the left un type always add it to the operator stack
+            # if token is from the left un type always add it to the operator stack
+        elif token in get_left_un_operator().keys():
             operators.append(token)
         elif token in op_dict.keys():
             while len(operators) != 0 and op_dict[operators[-1]] >= op_dict[token]:
-                try:
-                    result = pop_and_culc(values, operators)
-                    values.append(result)
-                except IndexError:
-                    raise SyntaxError('Unknown error syntax error accrued')
+                result = pop_and_culc(values, operators)
+                values.append(result)
             operators.append(token)
 
     while len(operators) != 0:
@@ -199,7 +203,7 @@ def start():
         exp = input()
 
 
-def check():
+def test():
     print('Enter expression (type "exit" to quit):')
     exp = input()
 
@@ -213,7 +217,7 @@ def check():
 
 def main():
     try:
-        start()
+        test()
     except KeyboardInterrupt:
         print("Caught keyboard interrupt. Exiting the program.")
     except EOFError:

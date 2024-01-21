@@ -29,6 +29,7 @@ def get_invalid_chars(exp: str) -> list:
             invalid_chars.append(char)
     return invalid_chars
 
+
 # return true if the parenthesis are balanced
 # otherwise return false
 def is_parenthesis_balanced(input_string) -> bool:
@@ -179,4 +180,3 @@ def validate_exp(exp: str):
     misplaced_op_in_edge = get_misplaced_op_in_edge(exp)
     if len(misplaced_op_in_edge) > 0:
         raise SyntaxError(f'those operator can not be on the edge')
-

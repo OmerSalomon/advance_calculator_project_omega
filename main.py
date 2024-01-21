@@ -217,7 +217,7 @@ def test():
 
 def main():
     try:
-        test()
+        start()
     except KeyboardInterrupt:
         print("Caught keyboard interrupt. Exiting the program.")
     except EOFError:

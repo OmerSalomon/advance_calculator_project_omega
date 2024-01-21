@@ -26,6 +26,7 @@ from main import evaluate_exp, get_operator_dict
 def test_evaluate_exp(input_n, expected):
     assert evaluate_exp(input_n, get_operator_dict()) == expected
 
+
 @pytest.mark.parametrize("input_value, expected_exception", [
     ('abc', ValueError),
     ('', ValueError),

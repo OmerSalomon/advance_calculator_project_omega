@@ -150,10 +150,7 @@ def is_number(s: str) -> bool:
 # return the evaluate value of the expression
 def evaluate_exp(exp: str, op_dict: dict) -> float:
     vld.validate_exp(exp)
-
-    exp = exp_manipulation.replace_unary_minuses_with_u(exp)
-    exp = exp_manipulation.fix_plus_minus(exp)
-
+    exp = exp_manipulation.manipulate_string(exp)
     tokens = split_expression(exp)
 
     values = []

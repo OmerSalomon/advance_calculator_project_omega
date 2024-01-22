@@ -11,15 +11,6 @@ import main
 #
 # Returns:
 # str: The simplified expression with redundant signs resolved.
-def fix_plus_minus(s: str) -> str:
-    while ('++' in s) or ('--' in s) or ('-+' in s) or ('+-' in s):
-        s = s.replace('++', '+')
-        s = s.replace('--', '+')
-        s = s.replace('-+', '-')
-        s = s.replace('+-', '-')
-
-    return s
-
 
 # Replaces unary minus operators in the expression with 'u'.
 # This function scans the expression and replaces each unary minus (a minus sign
@@ -36,8 +27,9 @@ def replace_unary_minuses_with_u(exp: str) -> str:
         return exp
 
     # Replace the initial minus if it's unary
-    if exp[0] == '-' and exp[1].isdigit() or exp[1] == '(':
-        exp = exp[:0] + 'u' + exp[0 + 1:]  # replace the first char of exp with 'u'
+    if exp[0] == '-':
+        if exp[1].isdigit() or exp[1] in main.get_parenthesis_dict() or exp[1] == '-':
+            exp = exp[:0] + 'u' + exp[0 + 1:]  # replace the first char of exp with 'u'
 
     i = 0
     while i < len(exp) - 1:
@@ -45,10 +37,9 @@ def replace_unary_minuses_with_u(exp: str) -> str:
             right_ne = exp[i + 1]
             left_ne = exp[i - 1]
             # Check the context of the minus sign to determine if it's unary
-            if not (left_ne in main.get_right_un_operator().keys()):
-                if left_ne in main.get_operator_dict() or left_ne in main.get_parenthesis_dict():
-                    if right_ne.isdigit() or right_ne in main.get_parenthesis_dict():
-                        exp = exp[:i] + 'u' + exp[i + 1:]
+            if left_ne in main.get_operator_dict().keys() or left_ne in main.get_parenthesis_dict():
+                if right_ne.isdigit() or right_ne == '-' or left_ne in main.get_parenthesis_dict():
+                    exp = exp[:i] + 'u' + exp[i + 1:]
         i += 1
 
     return exp
@@ -56,5 +47,4 @@ def replace_unary_minuses_with_u(exp: str) -> str:
 
 def manipulate_string(exp: str):
     exp = replace_unary_minuses_with_u(exp)
-    exp = fix_plus_minus(exp)
     return exp

@@ -29,12 +29,10 @@ def perform_digit_addition(val: float) -> int:
 
 # return the factorial of val
 def factorial(val: float) -> float:
-    if val < 0 or not val.is_integer():
-        raise ValueError("There is no factorial for non native number")
     val = int(val)
     result = 1
     for i in range(2, val + 1):
         result *= i
         if result > sys.float_info.max:
-            raise ValueError(f'The number {val} is too large for factorial argument too large')
+            raise ValueError(f'The number {val} is too large for factorial argument')
     return result

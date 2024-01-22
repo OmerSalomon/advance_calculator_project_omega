@@ -18,6 +18,8 @@ def perform_pow(base: float, exponent: float) -> float:
 
 # Return the sum of the digits
 def perform_digit_addition(val: float) -> int:
+    if 'e' in str(val):
+        raise ValueError('Can not perform # for number with scientific notation e')
     val = str(val)
     val = val.replace('.', '')
     res = 0
